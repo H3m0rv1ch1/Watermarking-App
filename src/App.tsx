@@ -54,15 +54,15 @@ function App() {
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors overflow-x-hidden" dir={language === 'ar' ? 'rtl' : 'ltr'}>
-      <div className="max-w-[1400px] mx-auto px-6">
-        <header className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 transition-colors sticky top-6 z-50 rounded-3xl shadow-lg backdrop-blur-sm bg-opacity-95 dark:bg-opacity-95 my-6">
-          <div className="px-6 py-4">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
+      <div className="max-w-[1400px] mx-auto px-3 sm:px-6">
+        <header className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 transition-colors sticky top-2 sm:top-6 z-50 rounded-2xl sm:rounded-3xl shadow-lg backdrop-blur-sm bg-opacity-95 dark:bg-opacity-95 my-2 sm:my-6">
+          <div className="px-3 sm:px-6 py-3 sm:py-4">
+            <div className="flex items-center justify-between flex-wrap gap-3">
+              <div className="flex items-center gap-2 sm:gap-3">
                 <div className="relative">
                   <div className="absolute inset-0 bg-blue-500 rounded-xl blur-md opacity-30"></div>
-                  <div className="relative bg-gradient-to-br from-blue-500 to-blue-600 p-2 rounded-xl shadow-lg">
-                    <svg width="32" height="32" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <div className="relative bg-gradient-to-br from-blue-500 to-blue-600 p-1.5 sm:p-2 rounded-lg sm:rounded-xl shadow-lg">
+                    <svg width="24" height="24" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" className="sm:w-8 sm:h-8">
                       <rect x="12" y="12" width="40" height="40" rx="4" fill="white" opacity="0.95"/>
                       <rect x="15" y="15" width="34" height="25" rx="2" fill="#E5E7EB"/>
                       <path d="M15 35 L22 28 L27 33 L32 25 L40 33 L49 25 L49 40 L15 40 Z" fill="#9CA3AF"/>
@@ -75,21 +75,21 @@ function App() {
                     </svg>
                   </div>
                 </div>
-                <div>
-                  <h1 className="text-xl font-bold text-gray-900 dark:text-white">
+                <div className="hidden sm:block">
+                  <h1 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white">
                     {t('title')}
                   </h1>
-                  <p className="text-gray-500 dark:text-gray-400 text-sm">
+                  <p className="text-gray-500 dark:text-gray-400 text-xs sm:text-sm hidden md:block">
                     {t('subtitle')}
                   </p>
                 </div>
               </div>
-              <div className="flex items-center gap-2.5">
+              <div className="flex items-center gap-2">
                 <div className="relative">
                   <button
                     type="button"
                     onClick={() => setIsLangDropdownOpen(!isLangDropdownOpen)}
-                    className="bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-lg px-3 py-2 text-sm font-medium border-2 border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500 transition-all cursor-pointer flex items-center gap-2 shadow-sm"
+                    className="bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-lg px-2 sm:px-3 py-1.5 sm:py-2 text-xs sm:text-sm font-medium border-2 border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500 transition-all cursor-pointer flex items-center gap-1 sm:gap-2 shadow-sm"
                   >
                     <span>
                       {language === 'en' && 'English'}
@@ -100,7 +100,7 @@ function App() {
                       {language === 'zh' && '中文'}
                       {language === 'ja' && '日本語'}
                     </span>
-                    <ChevronDown className={`w-4 h-4 transition-transform ${isLangDropdownOpen ? 'rotate-180' : ''}`} />
+                    <ChevronDown className={`w-3 h-3 sm:w-4 sm:h-4 transition-transform ${isLangDropdownOpen ? 'rotate-180' : ''}`} />
                   </button>
                   
                   {isLangDropdownOpen && (
@@ -109,7 +109,7 @@ function App() {
                         className="fixed inset-0 z-40" 
                         onClick={() => setIsLangDropdownOpen(false)}
                       />
-                      <div className="absolute right-0 z-50 mt-2 bg-white dark:bg-gray-700 border-2 border-gray-200 dark:border-gray-600 rounded-lg shadow-xl p-1.5 min-w-[160px] max-h-[320px] overflow-y-auto">
+                      <div className="absolute right-0 z-50 mt-2 bg-white dark:bg-gray-700 border-2 border-gray-200 dark:border-gray-600 rounded-lg shadow-xl p-1.5 min-w-[140px] sm:min-w-[160px] max-h-[280px] sm:max-h-[320px] overflow-y-auto">
                         {(['en', 'ar', 'es', 'fr', 'de', 'zh', 'ja'] as const).map((lang) => (
                           <button
                             key={lang}
@@ -118,7 +118,7 @@ function App() {
                               setLanguage(lang);
                               setIsLangDropdownOpen(false);
                             }}
-                            className={`w-full px-3 py-2.5 text-left font-medium transition-colors rounded-md ${
+                            className={`w-full px-2 sm:px-3 py-2 sm:py-2.5 text-left text-sm font-medium transition-colors rounded-md ${
                               language === lang
                                 ? 'bg-blue-500 text-white'
                                 : 'text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-600'
@@ -139,11 +139,11 @@ function App() {
                 </div>
                 <button
                   onClick={toggleTheme}
-                  className="p-2 rounded-lg bg-white dark:bg-gray-700 hover:border-gray-300 dark:hover:border-gray-500 transition-all border-2 border-gray-200 dark:border-gray-600 shadow-sm"
+                  className="p-1.5 sm:p-2 rounded-lg bg-white dark:bg-gray-700 hover:border-gray-300 dark:hover:border-gray-500 transition-all border-2 border-gray-200 dark:border-gray-600 shadow-sm"
                   aria-label="Toggle theme"
                 >
-                  <Sun className="w-5 h-5 text-gray-900 dark:text-white dark:hidden" />
-                  <Moon className="w-5 h-5 text-gray-900 dark:text-white hidden dark:block" />
+                  <Sun className="w-4 h-4 sm:w-5 sm:h-5 text-gray-900 dark:text-white dark:hidden" />
+                  <Moon className="w-4 h-4 sm:w-5 sm:h-5 text-gray-900 dark:text-white hidden dark:block" />
                 </button>
               </div>
             </div>
@@ -151,16 +151,16 @@ function App() {
         </header>
 
         {/* Update all text content with translations */}
-        <main className="pb-12">
-        <div className="space-y-6 scroll-smooth">
+        <main className="pb-8 sm:pb-12">
+        <div className="space-y-4 sm:space-y-6 scroll-smooth">
           {/* Top Row - Upload Images and Add Logos */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <section className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 transition-all hover:shadow-xl border border-gray-100 dark:border-gray-700">
-              <h2 className="text-lg font-semibold mb-4 text-gray-900 dark:text-white flex items-center gap-3">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
+            <section className="bg-white dark:bg-gray-800 rounded-xl sm:rounded-2xl shadow-lg p-4 sm:p-6 transition-all hover:shadow-xl border border-gray-100 dark:border-gray-700">
+              <h2 className="text-base sm:text-lg font-semibold mb-3 sm:mb-4 text-gray-900 dark:text-white flex items-center gap-2 sm:gap-3">
                 <div className="relative">
                   <div className="absolute inset-0 bg-blue-500 rounded-xl blur-md opacity-30"></div>
-                  <div className="relative bg-gradient-to-br from-blue-500 to-blue-600 p-2 rounded-xl shadow-lg">
-                    <Upload className="w-5 h-5 text-white" />
+                  <div className="relative bg-gradient-to-br from-blue-500 to-blue-600 p-1.5 sm:p-2 rounded-lg sm:rounded-xl shadow-lg">
+                    <Upload className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
                   </div>
                 </div>
                 {t('uploadImages')}
@@ -200,12 +200,12 @@ function App() {
               )}
             </section>
 
-            <section className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 transition-all hover:shadow-xl border border-gray-100 dark:border-gray-700">
-              <h2 className="text-lg font-semibold mb-4 text-gray-900 dark:text-white flex items-center gap-3">
+            <section className="bg-white dark:bg-gray-800 rounded-xl sm:rounded-2xl shadow-lg p-4 sm:p-6 transition-all hover:shadow-xl border border-gray-100 dark:border-gray-700">
+              <h2 className="text-base sm:text-lg font-semibold mb-3 sm:mb-4 text-gray-900 dark:text-white flex items-center gap-2 sm:gap-3">
                 <div className="relative">
                   <div className="absolute inset-0 bg-blue-500 rounded-xl blur-md opacity-30"></div>
-                  <div className="relative bg-gradient-to-br from-blue-500 to-blue-600 p-2 rounded-xl shadow-lg">
-                    <Sticker className="w-5 h-5 text-white" />
+                  <div className="relative bg-gradient-to-br from-blue-500 to-blue-600 p-1.5 sm:p-2 rounded-lg sm:rounded-xl shadow-lg">
+                    <Sticker className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
                   </div>
                 </div>
                 {t('addLogos')}
@@ -220,49 +220,49 @@ function App() {
 
           {/* Logo Settings Section */}
           {logos.length > 0 && (
-            <section className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 transition-all hover:shadow-xl border border-gray-100 dark:border-gray-700">
-              <div className="flex flex-col space-y-6">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-4">
-                    <h2 className="text-lg font-semibold text-gray-900 dark:text-white flex items-center gap-3">
-                      <div className="relative">
+            <section className="bg-white dark:bg-gray-800 rounded-xl sm:rounded-2xl shadow-lg p-4 sm:p-6 transition-all hover:shadow-xl border border-gray-100 dark:border-gray-700">
+              <div className="flex flex-col space-y-4 sm:space-y-6">
+                <div className="flex items-center justify-between gap-2">
+                  <div className="flex items-center gap-2 sm:gap-4 min-w-0 flex-1">
+                    <h2 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white flex items-center gap-2 sm:gap-3">
+                      <div className="relative flex-shrink-0">
                         <div className="absolute inset-0 bg-blue-500 rounded-xl blur-md opacity-30"></div>
-                        <div className="relative bg-gradient-to-br from-blue-500 to-blue-600 p-2 rounded-xl shadow-lg">
-                          <Settings className="w-5 h-5 text-white" />
+                        <div className="relative bg-gradient-to-br from-blue-500 to-blue-600 p-1.5 sm:p-2 rounded-lg sm:rounded-xl shadow-lg">
+                          <Settings className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
                         </div>
                       </div>
-                      {t('logoSettings')}
+                      <span className="hidden sm:inline truncate">{t('logoSettings')}</span>
+                      <span className="sm:hidden truncate">Logos</span>
                     </h2>
-                    <span className="text-sm text-gray-500 dark:text-gray-400">
+                    <span className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 flex-shrink-0">
                       ({t('logosCount', logos.length)})
                     </span>
                   </div>
-                  <div className="flex items-center gap-4">
-                    <button
-                      onClick={() => setPatternMode(!patternMode)}
-                      className={`flex items-center gap-2 px-3 py-2 rounded-lg font-medium transition-all border-2 shadow-sm text-sm ${
-                        patternMode
-                          ? 'bg-blue-500 text-white border-blue-500 hover:bg-blue-600'
-                          : 'bg-white dark:bg-gray-700 text-gray-900 dark:text-white border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500'
-                      }`}
-                    >
-                      <div className={`w-4 h-4 rounded border-2 flex items-center justify-center transition-colors ${
-                        patternMode
-                          ? 'bg-white border-white'
-                          : 'border-gray-300 dark:border-gray-500'
-                      }`}>
-                        {patternMode && (
-                          <svg className="w-2.5 h-2.5 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-                          </svg>
-                        )}
-                      </div>
-                      <span>{t('patternMode')}</span>
-                    </button>
-                  </div>
+                  <button
+                    onClick={() => setPatternMode(!patternMode)}
+                    className={`flex items-center gap-1 sm:gap-2 px-2 sm:px-3 py-1.5 sm:py-2 rounded-lg font-medium transition-all border-2 shadow-sm text-xs sm:text-sm flex-shrink-0 ${
+                      patternMode
+                        ? 'bg-blue-500 text-white border-blue-500 hover:bg-blue-600'
+                        : 'bg-white dark:bg-gray-700 text-gray-900 dark:text-white border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500'
+                    }`}
+                  >
+                    <div className={`w-3.5 h-3.5 sm:w-4 sm:h-4 rounded border-2 flex items-center justify-center transition-colors ${
+                      patternMode
+                        ? 'bg-white border-white'
+                        : 'border-gray-300 dark:border-gray-500'
+                    }`}>
+                      {patternMode && (
+                        <svg className="w-2 h-2 sm:w-2.5 sm:h-2.5 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                        </svg>
+                      )}
+                    </div>
+                    <span className="hidden sm:inline">{t('patternMode')}</span>
+                    <span className="sm:hidden">Pattern</span>
+                  </button>
                 </div>
 
-                <div className="bg-gray-50 dark:bg-gray-700/50 rounded-lg p-4">
+                <div className="bg-gray-50 dark:bg-gray-700/50 rounded-lg p-3 sm:p-4">
                   <LogoList
                     logos={logos.map(logo => ({
                       ...logo,
@@ -288,12 +288,12 @@ function App() {
           )}
 
           {/* Preview Section */}
-          <section className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 transition-all hover:shadow-xl border border-gray-100 dark:border-gray-700">
-            <h2 className="text-lg font-semibold mb-6 text-gray-900 dark:text-white flex items-center gap-3">
+          <section className="bg-white dark:bg-gray-800 rounded-xl sm:rounded-2xl shadow-lg p-4 sm:p-6 transition-all hover:shadow-xl border border-gray-100 dark:border-gray-700">
+            <h2 className="text-base sm:text-lg font-semibold mb-4 sm:mb-6 text-gray-900 dark:text-white flex items-center gap-2 sm:gap-3">
               <div className="relative">
                 <div className="absolute inset-0 bg-blue-500 rounded-xl blur-md opacity-30"></div>
-                <div className="relative bg-gradient-to-br from-blue-500 to-blue-600 p-2 rounded-xl shadow-lg">
-                  <Eye className="w-5 h-5 text-white" />
+                <div className="relative bg-gradient-to-br from-blue-500 to-blue-600 p-1.5 sm:p-2 rounded-lg sm:rounded-xl shadow-lg">
+                  <Eye className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
                 </div>
               </div>
               {t('preview')}
@@ -304,7 +304,7 @@ function App() {
             {images.length > 0 && logos.length > 0 && (
               <button
                 onClick={handleExport}
-                className="mt-6 w-full flex items-center justify-center gap-2 px-4 py-3 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors font-medium shadow-lg shadow-blue-500/20"
+                className="mt-4 sm:mt-6 w-full flex items-center justify-center gap-2 px-4 py-2.5 sm:py-3 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors text-sm sm:text-base font-medium shadow-lg shadow-blue-500/20"
               >
                 <Download className="w-5 h-5" />
                 {t('exportImages')}
