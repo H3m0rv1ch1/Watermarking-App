@@ -7,7 +7,7 @@ import { useState } from 'react';
 import { Download, Moon, Sun, Upload, Sticker, Settings, Eye, X, ChevronDown } from 'lucide-react';
 
 // Components
-import { ImageDropzone, ImagePreview, LogoList } from './components';
+import { ImageDropzone, ImagePreview, LogoList, WelcomePage } from './components';
 
 // Stores
 import { useImageStore, useLanguageStore } from './store';
@@ -16,6 +16,7 @@ import { useImageStore, useLanguageStore } from './store';
 import { useTheme } from './hooks';
 
 function App() {
+  const [showWelcome, setShowWelcome] = useState(true);
   const [isLangDropdownOpen, setIsLangDropdownOpen] = useState(false);
   
   const {
@@ -46,6 +47,11 @@ function App() {
     });
   };
 
+  // Show welcome page first
+  if (showWelcome) {
+    return <WelcomePage onGetStarted={() => setShowWelcome(false)} />;
+  }
+
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors overflow-x-hidden" dir={language === 'ar' ? 'rtl' : 'ltr'}>
       <div className="max-w-[1400px] mx-auto px-6">
@@ -74,7 +80,7 @@ function App() {
                     {t('title')}
                   </h1>
                   <p className="text-gray-500 dark:text-gray-400 text-sm">
-                    Professional watermarking tool
+                    {t('subtitle')}
                   </p>
                 </div>
               </div>
@@ -85,7 +91,15 @@ function App() {
                     onClick={() => setIsLangDropdownOpen(!isLangDropdownOpen)}
                     className="bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-lg px-3 py-2 text-sm font-medium border-2 border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500 transition-all cursor-pointer flex items-center gap-2 shadow-sm"
                   >
-                    <span>{language === 'en' ? 'English' : 'العربية'}</span>
+                    <span>
+                      {language === 'en' && 'English'}
+                      {language === 'ar' && 'العربية'}
+                      {language === 'es' && 'Español'}
+                      {language === 'fr' && 'Français'}
+                      {language === 'de' && 'Deutsch'}
+                      {language === 'zh' && '中文'}
+                      {language === 'ja' && '日本語'}
+                    </span>
                     <ChevronDown className={`w-4 h-4 transition-transform ${isLangDropdownOpen ? 'rotate-180' : ''}`} />
                   </button>
                   
@@ -95,35 +109,30 @@ function App() {
                         className="fixed inset-0 z-40" 
                         onClick={() => setIsLangDropdownOpen(false)}
                       />
-                      <div className="absolute right-0 z-50 mt-2 bg-white dark:bg-gray-700 border-2 border-gray-200 dark:border-gray-600 rounded-lg shadow-xl p-1.5 min-w-[120px]">
-                        <button
-                          type="button"
-                          onClick={() => {
-                            setLanguage('en');
-                            setIsLangDropdownOpen(false);
-                          }}
-                          className={`w-full px-3 py-2.5 text-left font-medium transition-colors rounded-md ${
-                            language === 'en'
-                              ? 'bg-blue-500 text-white'
-                              : 'text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-600'
-                          }`}
-                        >
-                          English
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => {
-                            setLanguage('ar');
-                            setIsLangDropdownOpen(false);
-                          }}
-                          className={`w-full px-3 py-2.5 text-left font-medium transition-colors rounded-md ${
-                            language === 'ar'
-                              ? 'bg-blue-500 text-white'
-                              : 'text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-600'
-                          }`}
-                        >
-                          العربية
-                        </button>
+                      <div className="absolute right-0 z-50 mt-2 bg-white dark:bg-gray-700 border-2 border-gray-200 dark:border-gray-600 rounded-lg shadow-xl p-1.5 min-w-[160px] max-h-[320px] overflow-y-auto">
+                        {(['en', 'ar', 'es', 'fr', 'de', 'zh', 'ja'] as const).map((lang) => (
+                          <button
+                            key={lang}
+                            type="button"
+                            onClick={() => {
+                              setLanguage(lang);
+                              setIsLangDropdownOpen(false);
+                            }}
+                            className={`w-full px-3 py-2.5 text-left font-medium transition-colors rounded-md ${
+                              language === lang
+                                ? 'bg-blue-500 text-white'
+                                : 'text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-600'
+                            }`}
+                          >
+                            {lang === 'en' && 'English'}
+                            {lang === 'ar' && 'العربية'}
+                            {lang === 'es' && 'Español'}
+                            {lang === 'fr' && 'Français'}
+                            {lang === 'de' && 'Deutsch'}
+                            {lang === 'zh' && '中文'}
+                            {lang === 'ja' && '日本語'}
+                          </button>
+                        ))}
                       </div>
                     </>
                   )}
@@ -154,7 +163,7 @@ function App() {
                     <Upload className="w-5 h-5 text-white" />
                   </div>
                 </div>
-                Upload Images
+                {t('uploadImages')}
               </h2>
               <ImageDropzone
                 onDrop={addImages}
@@ -199,7 +208,7 @@ function App() {
                     <Sticker className="w-5 h-5 text-white" />
                   </div>
                 </div>
-                Add Logos
+                {t('addLogos')}
               </h2>
               <ImageDropzone
                 onDrop={(files) => addLogo(files[0])}
@@ -222,10 +231,10 @@ function App() {
                           <Settings className="w-5 h-5 text-white" />
                         </div>
                       </div>
-                      Logo Settings
+                      {t('logoSettings')}
                     </h2>
                     <span className="text-sm text-gray-500 dark:text-gray-400">
-                      ({logos.length} {logos.length === 1 ? 'logo' : 'logos'})
+                      ({t('logosCount', logos.length)})
                     </span>
                   </div>
                   <div className="flex items-center gap-4">
@@ -248,7 +257,7 @@ function App() {
                           </svg>
                         )}
                       </div>
-                      <span>Pattern Mode</span>
+                      <span>{t('patternMode')}</span>
                     </button>
                   </div>
                 </div>
@@ -287,7 +296,7 @@ function App() {
                   <Eye className="w-5 h-5 text-white" />
                 </div>
               </div>
-              Preview
+              {t('preview')}
             </h2>
             
             <ImagePreview />
@@ -298,7 +307,7 @@ function App() {
                 className="mt-6 w-full flex items-center justify-center gap-2 px-4 py-3 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors font-medium shadow-lg shadow-blue-500/20"
               >
                 <Download className="w-5 h-5" />
-                Export Images
+                {t('exportImages')}
               </button>
             )}
           </section>

@@ -1,6 +1,7 @@
 import React from 'react';
 import { Image as ImageIcon, Upload } from 'lucide-react';
 import { cn } from '../lib/utils';
+import { useLanguageStore } from '../store';
 
 interface ImageDropzoneProps {
   onDrop: (files: FileList) => void;
@@ -16,6 +17,7 @@ export function ImageDropzone({
   multiple = true,
 }: ImageDropzoneProps) {
   const [isDragging, setIsDragging] = React.useState(false);
+  const { t } = useLanguageStore();
 
   const handleDragOver = (e: React.DragEvent) => {
     e.preventDefault();
@@ -54,10 +56,10 @@ export function ImageDropzone({
           <ImageIcon className="w-12 h-12 text-gray-400 dark:text-gray-500 mb-3" />
         )}
         <p className="mb-2 text-sm text-gray-500 dark:text-gray-400">
-          <span className="font-semibold">Click to upload</span> or drag and drop
+          <span className="font-semibold">{t('clickToUpload')}</span> {t('dragAndDrop')}
         </p>
         <p className="text-xs text-gray-500 dark:text-gray-400">
-          {multiple ? "Images" : "Image"} ({accept.replace("image/", "")})
+          {multiple ? t('images') : t('image')} (PNG, JPG, WEBP)
         </p>
       </div>
       <input

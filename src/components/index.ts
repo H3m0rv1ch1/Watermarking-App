@@ -6,3 +6,4 @@
 export { ImageDropzone } from './ImageDropzone';
 export { ImagePreview } from './ImagePreview';
 export { LogoList } from './LogoList';
+export { WelcomePage } from './WelcomePage';

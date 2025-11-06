@@ -35,6 +35,6 @@ export interface ImageFile {
   dataUrl: string;
 }
 
-export type Language = 'en' | 'ar';
+export type Language = 'en' | 'ar' | 'es' | 'fr' | 'de' | 'zh' | 'ja';
 
 export type Theme = 'light' | 'dark';
