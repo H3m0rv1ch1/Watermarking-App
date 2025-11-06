@@ -10,16 +10,21 @@ interface Logo {
   opacity: number;
   x: number;
   y: number;
+  patternSize?: number;
+  patternRotation?: number;
+  patternOffsetX?: number;
+  patternOffsetY?: number;
 }
 
 interface ImageStore {
-  images: { file: File; dataUrl: string }[];
+  images: { file: File; dataUrl: string; id: string }[];
   logos: Logo[];
   patternMode: boolean;
   addImages: (files: FileList) => Promise<void>;
   addLogo: (file: File) => Promise<void>;
   updateLogo: (id: string, updates: Partial<Logo>) => void;
   removeLogo: (id: string) => void;
+  removeImage: (id: string) => void;
   setPatternMode: (enabled: boolean) => void;
   processImages: () => Promise<File[]>;
 }
@@ -32,6 +37,7 @@ export const useImageStore = create<ImageStore>((set, get) => ({
   addImages: async (files) => {
     const newImages = await Promise.all(
       Array.from(files).map(async (file) => ({
+        id: Math.random().toString(36).slice(2),
         file,
         dataUrl: await readFileAsDataURL(file),
       }))
@@ -65,6 +71,12 @@ export const useImageStore = create<ImageStore>((set, get) => ({
   removeLogo: (id) => {
     set((state) => ({
       logos: state.logos.filter((logo) => logo.id !== id),
+    }));
+  },
+
+  removeImage: (id) => {
+    set((state) => ({
+      images: state.images.filter((image) => image.id !== id),
     }));
   },
 

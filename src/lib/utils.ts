@@ -1,10 +1,21 @@
+/**
+ * Utility Functions
+ * Helper functions used throughout the application
+ */
+
 import { type ClassValue, clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 
+/**
+ * Merges Tailwind CSS classes with clsx
+ */
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
+/**
+ * Reads a file and converts it to a Data URL
+ */
 export function readFileAsDataURL(file: File): Promise<string> {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
@@ -14,6 +25,9 @@ export function readFileAsDataURL(file: File): Promise<string> {
   });
 }
 
+/**
+ * Loads an image from a source URL
+ */
 export function loadImage(src: string): Promise<HTMLImageElement> {
   return new Promise((resolve, reject) => {
     const img = new Image();
@@ -23,6 +37,9 @@ export function loadImage(src: string): Promise<HTMLImageElement> {
   });
 }
 
+/**
+ * Logo position presets with normalized coordinates (0-1)
+ */
 export const positions = {
   'top-left': { x: 0.1, y: 0.1 },
   'top-center': { x: 0.5, y: 0.1 },
@@ -37,25 +54,12 @@ export const positions = {
 
 export type Position = keyof typeof positions;
 
+/**
+ * Pattern mode presets for quick watermark configurations
+ */
 export const patternPresets = {
   'diagonal': { rotation: 45, size: 50, offsetX: 20, offsetY: 20 },
   'grid': { rotation: 0, size: 80, offsetX: 0, offsetY: 0 },
   'scattered': { rotation: 15, size: 30, offsetX: 10, offsetY: 10 },
   'dense': { rotation: 0, size: 40, offsetX: 5, offsetY: 5 },
 };
-
-export function useTheme() {
-  const isDark = document.documentElement.classList.contains('dark');
-  
-  const toggle = () => {
-    document.documentElement.classList.toggle('dark');
-    localStorage.setItem('theme', isDark ? 'light' : 'dark');
-  };
-
-  const set = (theme: 'dark' | 'light') => {
-    document.documentElement.classList.toggle('dark', theme === 'dark');
-    localStorage.setItem('theme', theme);
-  };
-
-  return { isDark, toggle, set };
-}

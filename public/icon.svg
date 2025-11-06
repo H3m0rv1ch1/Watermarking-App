@@ -1,0 +1,28 @@
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="512" y2="512">
+      <stop offset="0%" stop-color="#3B82F6"/>
+      <stop offset="100%" stop-color="#2563EB"/>
+    </linearGradient>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="512" height="512" rx="110" fill="url(#bg)"/>
+  
+  <!-- Main photo/image card -->
+  <rect x="100" y="100" width="312" height="312" rx="28" fill="white"/>
+  
+  <!-- Image content area -->
+  <rect x="120" y="120" width="272" height="200" rx="16" fill="#E5E7EB"/>
+  
+  <!-- Mountain landscape -->
+  <path d="M120 280 L180 220 L220 260 L260 200 L320 260 L392 200 L392 320 L120 320 Z" fill="#9CA3AF"/>
+  <path d="M220 260 L260 200 L320 260 L392 200 L392 320 L220 320 Z" fill="#6B7280"/>
+  
+  <!-- Sun -->
+  <circle cx="340" cy="160" r="20" fill="#FCD34D"/>
+  
+  <!-- Text lines (representing watermark text) -->
+  <rect x="140" y="340" width="120" height="12" rx="6" fill="#D1D5DB"/>
+  <rect x="140" y="365" width="180" height="12" rx="6" fill="#D1D5DB"/>
+</svg>

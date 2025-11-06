@@ -1,8 +1,8 @@
-import React from 'react';
+import { useState } from 'react';
 import { DndContext, DragEndEvent, closestCenter } from '@dnd-kit/core';
 import { SortableContext, arrayMove, useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { GripVertical, Trash2 } from 'lucide-react';
+import { GripVertical, Trash2, ChevronDown } from 'lucide-react';
 import { Position, positions } from '../lib/utils';
 
 interface Logo {
@@ -25,6 +25,8 @@ interface LogoItemProps {
 }
 
 function LogoItem({ logo, patternMode, onUpdate, onRemove }: LogoItemProps) {
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  
   const {
     attributes,
     listeners,
@@ -59,16 +61,16 @@ function LogoItem({ logo, patternMode, onUpdate, onRemove }: LogoItemProps) {
   };
 
   return (
-    <div className="flex items-center gap-4 p-4 bg-white dark:bg-gray-700/50 rounded-lg shadow-sm transition-colors border border-gray-100 dark:border-gray-600">
+    <div ref={setNodeRef} style={style} className="flex items-center gap-4 p-4 bg-white dark:bg-gray-800 rounded-xl shadow-md transition-all hover:shadow-lg border border-gray-200 dark:border-gray-700">
       <button
-        className="cursor-grab active:cursor-grabbing p-2 hover:bg-gray-100 dark:hover:bg-gray-600 rounded-lg transition-colors"
+        className="cursor-grab active:cursor-grabbing p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
         {...attributes}
         {...listeners}
       >
-        <GripVertical className="w-5 h-5 text-gray-400 dark:text-gray-500" />
+        <GripVertical className="w-5 h-5 text-gray-400" />
       </button>
 
-      <div className="w-16 h-16 flex items-center justify-center bg-white dark:bg-gray-600 rounded-lg border border-gray-200 dark:border-gray-500">
+      <div className="w-16 h-16 flex items-center justify-center bg-gray-50 dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600">
         <img
           src={logo.dataUrl}
           alt="Logo preview"
@@ -77,44 +79,69 @@ function LogoItem({ logo, patternMode, onUpdate, onRemove }: LogoItemProps) {
       </div>
 
       <div className="flex-1 space-y-4">
-        {/* Regular settings */}
-        <select
-          value={logo.position}
-          onChange={(e) => handlePositionChange(e.target.value as Position)}
-          className="w-full p-2 border rounded-lg bg-white dark:bg-gray-600 border-gray-200 dark:border-gray-500 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500"
-        >
-          {Object.entries(positions).map(([key, value]) => (
-            <option key={key} value={key}>
-              {key.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')}
-            </option>
-          ))}
-        </select>
+        <div className="space-y-2 relative">
+          <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Position</label>
+          <div className="relative">
+            <button
+              type="button"
+              onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+              className="w-full p-2.5 border-2 rounded-lg bg-white dark:bg-gray-700 border-gray-200 dark:border-gray-600 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all font-medium shadow-sm hover:border-gray-300 dark:hover:border-gray-500 cursor-pointer flex items-center justify-between"
+            >
+              <span>{logo.position.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')}</span>
+              <ChevronDown className={`w-4 h-4 transition-transform ${isDropdownOpen ? 'rotate-180' : ''}`} />
+            </button>
+            
+            {isDropdownOpen && (
+              <>
+                <div 
+                  className="fixed inset-0 z-10" 
+                  onClick={() => setIsDropdownOpen(false)}
+                />
+                <div className="absolute z-20 w-full mt-2 bg-white dark:bg-gray-700 border-2 border-gray-200 dark:border-gray-600 rounded-lg shadow-xl p-1.5">
+                  {Object.entries(positions).map(([key]) => (
+                    <button
+                      key={key}
+                      type="button"
+                      onClick={() => {
+                        handlePositionChange(key as Position);
+                        setIsDropdownOpen(false);
+                      }}
+                      className={`w-full px-3 py-2.5 text-left font-medium transition-colors rounded-md ${
+                        logo.position === key
+                          ? 'bg-blue-500 text-white'
+                          : 'text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-600'
+                      }`}
+                    >
+                      {key.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')}
+                    </button>
+                  ))}
+                </div>
+              </>
+            )}
+          </div>
+        </div>
 
         {!patternMode && (
-          <>
-            <div className="space-y-2">
-              {/* Size control */}
-              <div className="flex items-center justify-between">
-                <label className="text-sm font-medium text-gray-600 dark:text-gray-300">Size</label>
-                <span className="text-sm text-gray-500 dark:text-gray-400">{logo.size}%</span>
-              </div>
-              <input
-                type="range"
-                min="1"
-                max="100"
-                value={logo.size}
-                onChange={(e) => handleSizeChange(Number(e.target.value))}
-                className="w-full accent-blue-500"
-              />
+          <div className="space-y-2">
+            <div className="flex items-center justify-between">
+              <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Size</label>
+              <span className="text-sm font-semibold text-blue-600 dark:text-blue-400">{logo.size}%</span>
             </div>
-          </>
+            <input
+              type="range"
+              min="1"
+              max="100"
+              value={logo.size}
+              onChange={(e) => handleSizeChange(Number(e.target.value))}
+              className="w-full accent-blue-500"
+            />
+          </div>
         )}
 
-        {/* Opacity control - shown in both modes */}
         <div className="space-y-2">
           <div className="flex items-center justify-between">
-            <label className="text-sm font-medium text-gray-600 dark:text-gray-300">Opacity</label>
-            <span className="text-sm text-gray-500 dark:text-gray-400">{Math.round(logo.opacity * 100)}%</span>
+            <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Opacity</label>
+            <span className="text-sm font-semibold text-blue-600 dark:text-blue-400">{Math.round(logo.opacity * 100)}%</span>
           </div>
           <input
             type="range"
@@ -127,17 +154,15 @@ function LogoItem({ logo, patternMode, onUpdate, onRemove }: LogoItemProps) {
           />
         </div>
 
-        {/* Pattern settings - only show when pattern mode is enabled */}
         {patternMode && (
-          <div className="pt-4 border-t border-gray-200 dark:border-gray-600">
-            <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-4">Pattern Settings</h3>
+          <div className="pt-4 border-t border-gray-200 dark:border-gray-700">
+            <h3 className="text-sm font-semibold text-gray-900 dark:text-white mb-4">Pattern Settings</h3>
             
             <div className="space-y-4">
-              {/* Pattern size control */}
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
-                  <label className="text-sm font-medium text-gray-600 dark:text-gray-300">Pattern Size</label>
-                  <span className="text-sm text-gray-500 dark:text-gray-400">{logo.patternSize || 100}%</span>
+                  <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Pattern Size</label>
+                  <span className="text-sm font-semibold text-blue-600 dark:text-blue-400">{logo.patternSize || 100}%</span>
                 </div>
                 <input
                   type="range"
@@ -151,8 +176,8 @@ function LogoItem({ logo, patternMode, onUpdate, onRemove }: LogoItemProps) {
 
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
-                  <label className="text-sm font-medium text-gray-600 dark:text-gray-300">Rotation</label>
-                  <span className="text-sm text-gray-500 dark:text-gray-400">{logo.patternRotation}°</span>
+                  <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Rotation</label>
+                  <span className="text-sm font-semibold text-blue-600 dark:text-blue-400">{logo.patternRotation}°</span>
                 </div>
                 <input
                   type="range"
@@ -167,8 +192,8 @@ function LogoItem({ logo, patternMode, onUpdate, onRemove }: LogoItemProps) {
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <div className="flex items-center justify-between">
-                    <label className="text-sm font-medium text-gray-600 dark:text-gray-300">Offset X</label>
-                    <span className="text-sm text-gray-500 dark:text-gray-400">{logo.patternOffsetX}px</span>
+                    <label className="text-xs font-medium text-gray-700 dark:text-gray-300">Offset X</label>
+                    <span className="text-xs font-semibold text-blue-600 dark:text-blue-400">{logo.patternOffsetX}px</span>
                   </div>
                   <input
                     type="range"
@@ -182,8 +207,8 @@ function LogoItem({ logo, patternMode, onUpdate, onRemove }: LogoItemProps) {
 
                 <div className="space-y-2">
                   <div className="flex items-center justify-between">
-                    <label className="text-sm font-medium text-gray-600 dark:text-gray-300">Offset Y</label>
-                    <span className="text-sm text-gray-500 dark:text-gray-400">{logo.patternOffsetY}px</span>
+                    <label className="text-xs font-medium text-gray-700 dark:text-gray-300">Offset Y</label>
+                    <span className="text-xs font-semibold text-blue-600 dark:text-blue-400">{logo.patternOffsetY}px</span>
                   </div>
                   <input
                     type="range"

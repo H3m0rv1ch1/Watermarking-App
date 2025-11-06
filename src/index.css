@@ -10,4 +10,39 @@
   .dark {
     color-scheme: dark;
   }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    overflow-x: hidden;
+  }
+
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: rgb(156 163 175) transparent;
+  }
+
+  .dark * {
+    scrollbar-color: rgb(75 85 99) transparent;
+  }
+
+  *::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  *::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  *::-webkit-scrollbar-thumb {
+    background-color: rgb(156 163 175);
+    border-radius: 10px;
+  }
+
+  .dark *::-webkit-scrollbar-thumb {
+    background-color: rgb(75 85 99);
+  }
 }
