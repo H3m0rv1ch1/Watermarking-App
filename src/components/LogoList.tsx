@@ -4,6 +4,7 @@ import { SortableContext, arrayMove, useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { GripVertical, Trash2, ChevronDown, Image as ImageIcon } from 'lucide-react';
 import { Position, positions, readFileAsDataURL } from '../lib/utils';
+import { useLanguageStore } from '../store';
 
 interface Logo {
   id: string;
@@ -18,6 +19,8 @@ interface Logo {
   patternRotation: number;
   patternOffsetX: number;
   patternOffsetY: number;
+  patternSpacingX?: number;
+  patternSpacingY?: number;
 }
 
 interface LogoItemProps {
@@ -28,9 +31,21 @@ interface LogoItemProps {
 }
 
 function LogoItem({ logo, patternMode, onUpdate, onRemove }: LogoItemProps) {
+  const { t } = useLanguageStore();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isChangingImage, setIsChangingImage] = useState(false);
   const fileInputId = `logo-file-${logo.id}`;
+  const positionLabelMap: Record<Position, string> = {
+    'top-left': 'positionTopLeft',
+    'top-center': 'positionTopCenter',
+    'top-right': 'positionTopRight',
+    'center-left': 'positionCenterLeft',
+    'center': 'positionCenter',
+    'center-right': 'positionCenterRight',
+    'bottom-left': 'positionBottomLeft',
+    'bottom-center': 'positionBottomCenter',
+    'bottom-right': 'positionBottomRight',
+  };
   
   const {
     attributes,
@@ -90,8 +105,8 @@ function LogoItem({ logo, patternMode, onUpdate, onRemove }: LogoItemProps) {
         <div className="w-14 h-14 sm:w-16 sm:h-16 relative flex items-center justify-center bg-gray-50 dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600 group">
           <button
             type="button"
-            title="Click to change logo image"
-            aria-label="Change logo image"
+            title={t('changeLogoImage')}
+            aria-label={t('changeLogoImage')}
             className="absolute inset-0 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer"
             onClick={() => {
               const input = document.getElementById(fileInputId) as HTMLInputElement | null;
@@ -125,7 +140,7 @@ function LogoItem({ logo, patternMode, onUpdate, onRemove }: LogoItemProps) {
         <button
           onClick={onRemove}
           className="ml-auto sm:hidden p-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
-          title="Remove logo"
+          title={t('removeLogo')}
         >
           <Trash2 className="w-5 h-5" />
         </button>
@@ -133,14 +148,14 @@ function LogoItem({ logo, patternMode, onUpdate, onRemove }: LogoItemProps) {
 
       <div className="flex-1 w-full space-y-3 sm:space-y-4">
         <div className="space-y-1.5 sm:space-y-2 relative">
-          <label className="text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300">Position</label>
+          <label className="text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300">{t('position')}</label>
           <div className="relative">
             <button
               type="button"
               onClick={() => setIsDropdownOpen(!isDropdownOpen)}
               className="w-full p-2 sm:p-2.5 border-2 rounded-lg bg-white dark:bg-gray-700 border-gray-200 dark:border-gray-600 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all text-sm font-medium shadow-sm hover:border-gray-300 dark:hover:border-gray-500 cursor-pointer flex items-center justify-between"
             >
-              <span className="text-xs sm:text-sm">{logo.position.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')}</span>
+              <span className="text-xs sm:text-sm">{t(positionLabelMap[logo.position] as any)}</span>
               <ChevronDown className={`w-3 h-3 sm:w-4 sm:h-4 transition-transform ${isDropdownOpen ? 'rotate-180' : ''}`} />
             </button>
             
@@ -165,7 +180,7 @@ function LogoItem({ logo, patternMode, onUpdate, onRemove }: LogoItemProps) {
                           : 'text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-600'
                       }`}
                     >
-                      {key.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')}
+                      {t(positionLabelMap[key as Position] as any)}
                     </button>
                   ))}
                 </div>
@@ -177,7 +192,7 @@ function LogoItem({ logo, patternMode, onUpdate, onRemove }: LogoItemProps) {
         {!patternMode && (
           <div className="space-y-1.5 sm:space-y-2">
             <div className="flex items-center justify-between">
-              <label className="text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300">Size</label>
+              <label className="text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300">{t('size')}</label>
               <span className="text-xs sm:text-sm font-semibold text-blue-600 dark:text-blue-400">{logo.size}%</span>
             </div>
             <input
@@ -193,7 +208,7 @@ function LogoItem({ logo, patternMode, onUpdate, onRemove }: LogoItemProps) {
 
         <div className="space-y-1.5 sm:space-y-2">
           <div className="flex items-center justify-between">
-            <label className="text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300">Opacity</label>
+            <label className="text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300">{t('opacity')}</label>
             <span className="text-xs sm:text-sm font-semibold text-blue-600 dark:text-blue-400">{Math.round(logo.opacity * 100)}%</span>
           </div>
           <input
@@ -209,12 +224,12 @@ function LogoItem({ logo, patternMode, onUpdate, onRemove }: LogoItemProps) {
 
         {patternMode && (
           <div className="pt-3 sm:pt-4 border-t border-gray-200 dark:border-gray-700">
-            <h3 className="text-xs sm:text-sm font-semibold text-gray-900 dark:text-white mb-3 sm:mb-4">Pattern Settings</h3>
+            <h3 className="text-xs sm:text-sm font-semibold text-gray-900 dark:text-white mb-3 sm:mb-4">{t('patternSettings')}</h3>
             
             <div className="space-y-3 sm:space-y-4">
               <div className="space-y-1.5 sm:space-y-2">
                 <div className="flex items-center justify-between">
-                  <label className="text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300">Pattern Size</label>
+                  <label className="text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300">{t('patternSize')}</label>
                   <span className="text-xs sm:text-sm font-semibold text-blue-600 dark:text-blue-400">{logo.patternSize || 100}%</span>
                 </div>
                 <input
@@ -229,7 +244,7 @@ function LogoItem({ logo, patternMode, onUpdate, onRemove }: LogoItemProps) {
 
               <div className="space-y-1.5 sm:space-y-2">
                 <div className="flex items-center justify-between">
-                  <label className="text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300">Rotation</label>
+                  <label className="text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300">{t('rotation')}</label>
                   <span className="text-xs sm:text-sm font-semibold text-blue-600 dark:text-blue-400">{logo.patternRotation}°</span>
                 </div>
                 <input
@@ -245,7 +260,7 @@ function LogoItem({ logo, patternMode, onUpdate, onRemove }: LogoItemProps) {
               <div className="grid grid-cols-2 gap-3 sm:gap-4">
                 <div className="space-y-1.5 sm:space-y-2">
                   <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1">
-                    <label className="text-xs font-medium text-gray-700 dark:text-gray-300">Offset X</label>
+                    <label className="text-xs font-medium text-gray-700 dark:text-gray-300">{t('offsetX')}</label>
                     <span className="text-xs font-semibold text-blue-600 dark:text-blue-400">{logo.patternOffsetX}px</span>
                   </div>
                   <input
@@ -260,7 +275,7 @@ function LogoItem({ logo, patternMode, onUpdate, onRemove }: LogoItemProps) {
 
                 <div className="space-y-1.5 sm:space-y-2">
                   <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1">
-                    <label className="text-xs font-medium text-gray-700 dark:text-gray-300">Offset Y</label>
+                    <label className="text-xs font-medium text-gray-700 dark:text-gray-300">{t('offsetY')}</label>
                     <span className="text-xs font-semibold text-blue-600 dark:text-blue-400">{logo.patternOffsetY}px</span>
                   </div>
                   <input
@@ -273,6 +288,38 @@ function LogoItem({ logo, patternMode, onUpdate, onRemove }: LogoItemProps) {
                   />
                 </div>
               </div>
+
+              <div className="grid grid-cols-2 gap-3 sm:gap-4">
+                <div className="space-y-1.5 sm:space-y-2">
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1">
+                    <label className="text-xs font-medium text-gray-700 dark:text-gray-300">{t('spacingX')}</label>
+                    <span className="text-xs font-semibold text-blue-600 dark:text-blue-400">{logo.patternSpacingX || 0}%</span>
+                  </div>
+                  <input
+                    type="range"
+                    min="0"
+                    max="200"
+                    value={logo.patternSpacingX || 0}
+                    onChange={(e) => onUpdate({ patternSpacingX: Number(e.target.value) })}
+                    className="w-full accent-blue-500 h-2"
+                  />
+                </div>
+
+                <div className="space-y-1.5 sm:space-y-2">
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1">
+                    <label className="text-xs font-medium text-gray-700 dark:text-gray-300">{t('spacingY')}</label>
+                    <span className="text-xs font-semibold text-blue-600 dark:text-blue-400">{logo.patternSpacingY || 0}%</span>
+                  </div>
+                  <input
+                    type="range"
+                    min="0"
+                    max="200"
+                    value={logo.patternSpacingY || 0}
+                    onChange={(e) => onUpdate({ patternSpacingY: Number(e.target.value) })}
+                    className="w-full accent-blue-500 h-2"
+                  />
+                </div>
+              </div>
             </div>
           </div>
         )}
@@ -281,7 +328,7 @@ function LogoItem({ logo, patternMode, onUpdate, onRemove }: LogoItemProps) {
       <button
         onClick={onRemove}
         className="hidden sm:block p-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
-        title="Remove logo"
+        title={t('removeLogo')}
       >
         <Trash2 className="w-5 h-5" />
       </button>

@@ -1,70 +1,57 @@
-# Quick Start Guide 🚀
+# Quick Start 🚀
 
-Get up and running with the Batch Image Watermarking App in minutes!
+Get productive in minutes.
 
 ## Prerequisites
 
-- Node.js 18+ installed
-- npm or yarn package manager
-- Rust (for Tauri builds)
+- Node.js 18+
+- npm (or yarn/pnpm)
+- Rust + Cargo (for Tauri desktop builds)
 
-## Installation
+## Install
 
 ```bash
-# Clone the repository
 git clone <your-repo-url>
 cd watermarking-app
-
-# Install dependencies
 npm install
 ```
 
-## Development
+## Develop
 
 ```bash
-# Start development server
+# Web preview (runs Vite dev server)
+npm run dev
+
+# Desktop preview (runs Tauri dev)
 npm run tauri dev
 ```
 
-The app will open in a native window with hot-reload enabled.
-
-## Building
+## Build
 
 ```bash
-# Build for production
-npm run tauri build
+# Web build
+npm run build      # outputs to dist/
+
+# Desktop build
+npm run tauri build  # outputs to src-tauri/target/release
 ```
 
-Builds will be available in `src-tauri/target/release/`
+## Use the App
 
-## Project Structure
-
-```
-src/
-├── components/     # UI components
-├── hooks/         # Custom hooks
-├── store/         # State management
-├── lib/           # Utilities
-├── types/         # TypeScript types
-└── constants/     # Configuration
-```
-
-## Key Features
-
-1. **Upload Images** - Drag & drop or click to upload
-2. **Add Logos** - Upload watermark logos
-3. **Configure** - Adjust size, position, opacity
-4. **Pattern Mode** - Create repeating patterns
-5. **Export** - Download processed images
+1. Upload images (drag & drop or click)
+2. Add one or more logos
+3. Configure position, size, opacity, rotation
+4. Toggle Pattern Mode for grid-style watermarks
+5. Export to download the results
 
 ## Tips
 
-- Use Pattern Mode for full-image watermarks
-- Adjust opacity for subtle watermarks
-- Multiple logos can be layered
-- Dark mode available in header
-- Supports EN/AR languages
+- Use lower opacity for subtle watermarks
+- Pattern Mode helps cover the full image
+- Theme toggle supports light/dark
+- Language chips are fixed LTR while Arabic UI is RTL
 
-## Need Help?
+## Docs
 
-Check the [README.md](README.md) for detailed documentation or [CONTRIBUTING.md](CONTRIBUTING.md) for development guidelines.
+- Read the [README](README.md) for features, design, and structure
+- See [CONTRIBUTING](CONTRIBUTING.md) for standards and PR guidance

@@ -1,54 +1,71 @@
-# Contributing Guidelines
+# Contributing
 
-Thank you for considering contributing to the Batch Image Watermarking App!
+Thanks for helping make this app better. This guide sets standards to keep the codebase clean and the UX polished.
 
-## Code Style
+## Setup
 
-- Use TypeScript for all new code
-- Follow the existing code structure and naming conventions
-- Use functional components with hooks
-- Keep components small and focused
-- Add JSDoc comments for complex functions
+- Fork the repo and clone your fork
+- Create a branch: `git checkout -b feat/short-description`
+- Install deps: `npm install`
+- Run locally: `npm run dev` (web) or `npm run tauri dev` (desktop)
 
-## Project Structure
+## Standards
 
-- `src/components/` - Reusable UI components
-- `src/hooks/` - Custom React hooks
-- `src/store/` - Zustand state management
-- `src/lib/` - Utility functions and helpers
-- `src/types/` - TypeScript type definitions
-- `src/constants/` - Application constants
+- TypeScript-first; keep types tight and explicit
+- React components small, focused, and composable
+- Tailwind CSS utilities for styling; avoid inline styles
+- Zustand for global state where appropriate
+- i18n keys live in `src/lib/i18n/translations.ts`
+- RTL: Arabic UI uses `dir="rtl"`; language chips remain `dir="ltr"`
+- Background is unified via global body gradient (light and dark)
 
-## Naming Conventions
+## Commits (Conventional Commits)
 
-- **Components**: PascalCase (e.g., `ImageDropzone.tsx`)
-- **Hooks**: camelCase with `use` prefix (e.g., `useTheme.ts`)
-- **Utilities**: camelCase (e.g., `loadImage.ts`)
-- **Constants**: UPPER_SNAKE_CASE (e.g., `MAX_IMAGE_SIZE`)
-- **Types/Interfaces**: PascalCase (e.g., `Logo`, `ImageFile`)
+- `feat:` new feature
+- `fix:` bug fix
+- `docs:` docs-only changes
+- `style:` formatting (no code changes)
+- `refactor:` restructuring without features or fixes
+- `perf:` performance improvements
+- `test:` add or fix tests
+- `chore:` tooling, build, dependencies
 
-## Commit Messages
+Example: `feat(welcome): flip Get Started arrow for RTL`
 
-Follow conventional commits:
-- `feat:` - New feature
-- `fix:` - Bug fix
-- `docs:` - Documentation changes
-- `style:` - Code style changes (formatting, etc.)
-- `refactor:` - Code refactoring
-- `test:` - Adding or updating tests
-- `chore:` - Maintenance tasks
+## Branching
 
-## Pull Request Process
+- Feature branches: `feat/...`
+- Bugfix branches: `fix/...`
+- Docs branches: `docs/...`
 
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'feat: add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
+## Pull Requests
 
-## Testing
+- Include screenshots for any UI change
+- Describe the change and how to test it
+- Checklist:
+  - Verified locally (`npm run dev` or `npm run tauri dev`)
+  - No type errors (`tsc --noEmit` if configured)
+  - Lint passes (`npm run lint` if available)
+  - i18n keys added for all languages when applicable
+  - Updated docs (README/QUICKSTART/CHANGELOG) where relevant
 
-- Test your changes thoroughly before submitting
-- Ensure the app builds without errors
-- Check both light and dark modes
-- Test with different image formats and sizes
+## Testing & Verification
+
+- Prefer component-level tests where possible
+- Manually verify both light/dark themes
+- Test EN and AR; confirm RTL behaviors and LTR language chips
+- Check mobile and desktop headers match design
+
+## Release Notes
+
+- Update [CHANGELOG.md](CHANGELOG.md) with notable changes
+- Follow semver for versioning (MAJOR.MINOR.PATCH)
+
+## Security & Privacy
+
+- Do not include sensitive data in commits or issues
+- Report vulnerabilities privately; see [SECURITY.md](SECURITY.md)
+
+## License
+
+By contributing, you agree that your contributions are licensed under MIT.

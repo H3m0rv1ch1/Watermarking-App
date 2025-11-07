@@ -14,6 +14,7 @@ import { useImageStore, useLanguageStore } from './store';
 
 // Hooks
 import { useTheme } from './hooks';
+import { shootConfetti } from './lib/confetti';
 
 function App() {
   const [showWelcome, setShowWelcome] = useState(true);
@@ -37,6 +38,10 @@ function App() {
 
   const handleExport = async () => {
     const processedFiles = await processImages();
+    // Celebrate successful export with a confetti burst
+    try {
+      shootConfetti({ duration: 1800, particles: 120 });
+    } catch {}
     
     processedFiles.forEach((file) => {
       const link = document.createElement('a');
@@ -53,7 +58,7 @@ function App() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors overflow-x-hidden" dir={language === 'ar' ? 'rtl' : 'ltr'}>
+    <div className="min-h-screen transition-colors overflow-x-hidden" dir={language === 'ar' ? 'rtl' : 'ltr'}>
       <div className="max-w-[1400px] mx-auto px-3 sm:px-6">
         <header className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 transition-colors sticky top-2 sm:top-6 z-50 rounded-2xl sm:rounded-3xl shadow-lg backdrop-blur-sm bg-opacity-95 dark:bg-opacity-95 my-2 sm:my-6">
           <div className="px-3 sm:px-6 py-3 sm:py-4">
@@ -173,7 +178,7 @@ function App() {
               {images.length > 0 && (
                 <div className="mt-4 space-y-2">
                   <p className="text-sm text-gray-600 dark:text-gray-300 bg-blue-50 dark:bg-blue-900/20 p-3 rounded-lg">
-                    {images.length} image{images.length !== 1 && 's'} selected
+                    {t('imagesSelected', images.length)}
                   </p>
                   <div className="grid grid-cols-2 gap-2 max-h-48 overflow-y-auto">
                     {images.map((image) => (
@@ -186,7 +191,7 @@ function App() {
                         <button
                           onClick={() => removeImage(image.id)}
                           className="absolute top-1 right-1 bg-red-500 hover:bg-red-600 text-white p-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity shadow-lg"
-                          aria-label="Delete image"
+                          aria-label={t('deleteImage')}
                         >
                           <X className="w-4 h-4" />
                         </button>
@@ -232,7 +237,7 @@ function App() {
                         </div>
                       </div>
                       <span className="hidden sm:inline truncate">{t('logoSettings')}</span>
-                      <span className="sm:hidden truncate">Logos</span>
+                      <span className="sm:hidden truncate">{t('logos')}</span>
                     </h2>
                     <span className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 flex-shrink-0">
                       ({t('logosCount', logos.length)})
@@ -258,7 +263,7 @@ function App() {
                       )}
                     </div>
                     <span className="hidden sm:inline">{t('patternMode')}</span>
-                    <span className="sm:hidden">Pattern</span>
+                    <span className="sm:hidden">{t('patternMode')}</span>
                   </button>
                 </div>
 
@@ -269,7 +274,9 @@ function App() {
                       patternSize: logo.patternSize || 100,
                       patternRotation: logo.patternRotation || 0,
                       patternOffsetX: logo.patternOffsetX || 0,
-                      patternOffsetY: logo.patternOffsetY || 0
+                      patternOffsetY: logo.patternOffsetY || 0,
+                      patternSpacingX: logo.patternSpacingX || 0,
+                      patternSpacingY: logo.patternSpacingY || 0
                     }))}
                     patternMode={patternMode}  // Pass pattern mode from store
                     onLogoUpdate={updateLogo}

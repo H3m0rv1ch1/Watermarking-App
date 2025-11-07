@@ -17,6 +17,11 @@
 
   body {
     overflow-x: hidden;
+    background-color: #ffffff;
+    background-image: linear-gradient(to bottom, #ffffff, #eff6ff);
+    background-attachment: fixed;
+    background-repeat: no-repeat;
+    background-size: cover;
   }
 
   * {
@@ -44,5 +49,14 @@
 
   .dark *::-webkit-scrollbar-thumb {
     background-color: rgb(75 85 99);
+  }
+  
+  /* Dark theme global background aligned with landing page */
+  .dark body {
+    background-color: #111827; /* gray-900 */
+    background-image: linear-gradient(to bottom, #111827, #1f2937); /* gray-900 -> gray-800 */
+    background-attachment: fixed;
+    background-repeat: no-repeat;
+    background-size: cover;
   }
 }

@@ -2,9 +2,11 @@ import React from 'react';
 import { useImageStore } from '../store/useImageStore';
 import { loadImage } from '../lib/utils';
 import { ChevronLeft, ChevronRight, X, ZoomIn, ZoomOut, Maximize2 } from 'lucide-react';
+import { useLanguageStore } from '../store';
 
 export function ImagePreview() {
   const { images, logos, patternMode } = useImageStore();
+  const { t } = useLanguageStore();
   const canvasRef = React.useRef<HTMLCanvasElement>(null);
   const fullscreenCanvasRef = React.useRef<HTMLCanvasElement>(null);
   const [previewIndex, setPreviewIndex] = React.useState(0);
@@ -38,17 +40,24 @@ export function ImagePreview() {
           // Calculate optimal pattern size based on image dimensions
           const baseSize = Math.min(canvas.width, canvas.height) * 0.1; // 10% of smallest dimension
           const patternSize = (logo.patternSize || 100) / 100 * baseSize;
+          const spacingX = (logo.patternSpacingX || 0) / 100 * baseSize;
+          const spacingY = (logo.patternSpacingY || 0) / 100 * baseSize;
           
           // Create a pattern buffer for better quality
           const patternCanvas = document.createElement('canvas');
           const patternCtx = patternCanvas.getContext('2d')!;
           
-          // Set pattern canvas size
-          patternCanvas.width = patternSize;
-          patternCanvas.height = patternSize * (logoImg.height / logoImg.width);
-          
-          // Draw logo in pattern canvas
-          patternCtx.drawImage(logoImg, 0, 0, patternCanvas.width, patternCanvas.height);
+          // Compute tile size including spacing
+          const logoTileWidth = patternSize;
+          const logoTileHeight = patternSize * (logoImg.height / logoImg.width);
+          patternCanvas.width = Math.max(1, logoTileWidth + spacingX);
+          patternCanvas.height = Math.max(1, logoTileHeight + spacingY);
+
+          // Draw logo centered within tile to create spacing around
+          const drawX = spacingX / 2;
+          const drawY = spacingY / 2;
+          patternCtx.clearRect(0, 0, patternCanvas.width, patternCanvas.height);
+          patternCtx.drawImage(logoImg, drawX, drawY, logoTileWidth, logoTileHeight);
           
           // Create pattern with the optimized logo
           const pattern = ctx.createPattern(patternCanvas, 'repeat')!;
@@ -182,7 +191,7 @@ export function ImagePreview() {
   if (!images.length) {
     return (
       <div className="aspect-video bg-gray-50 dark:bg-gray-700/50 rounded-lg flex items-center justify-center text-gray-400 dark:text-gray-500">
-        No images selected
+        {t('noImages')}
       </div>
     );
   }
@@ -212,17 +221,17 @@ export function ImagePreview() {
           className="flex-1 flex items-center justify-center gap-1 py-2 bg-gray-100 dark:bg-gray-700 rounded-lg disabled:opacity-50 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors disabled:hover:bg-gray-100 dark:disabled:hover:bg-gray-700"
         >
           <ChevronLeft className="w-4 h-4" />
-          Previous
+          {t('previous')}
         </button>
         <span className="text-sm font-medium text-gray-600 dark:text-gray-400">
-          {previewIndex + 1} of {images.length}
+          {previewIndex + 1} {t('of')} {images.length}
         </span>
         <button
           onClick={() => setPreviewIndex((i) => Math.min(images.length - 1, i + 1))}
           disabled={previewIndex === images.length - 1}
           className="flex-1 flex items-center justify-center gap-1 py-2 bg-gray-100 dark:bg-gray-700 rounded-lg disabled:opacity-50 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors disabled:hover:bg-gray-100 dark:disabled:hover:bg-gray-700"
         >
-          Next
+          {t('next')}
           <ChevronRight className="w-4 h-4" />
         </button>
       </div>

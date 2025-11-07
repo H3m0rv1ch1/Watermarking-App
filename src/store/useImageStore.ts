@@ -14,6 +14,8 @@ interface Logo {
   patternRotation?: number;
   patternOffsetX?: number;
   patternOffsetY?: number;
+  patternSpacingX?: number; // horizontal spacing percentage (0-200)
+  patternSpacingY?: number; // vertical spacing percentage (0-200)
 }
 
 interface ImageStore {
@@ -56,6 +58,8 @@ export const useImageStore = create<ImageStore>((set, get) => ({
       opacity: 0.8,
       x: positions['bottom-right'].x,
       y: positions['bottom-right'].y,
+      patternSpacingX: 0,
+      patternSpacingY: 0,
     };
     set((state) => ({ logos: [...state.logos, logo] }));
   },
@@ -106,14 +110,24 @@ export const useImageStore = create<ImageStore>((set, get) => ({
           
           const baseSize = Math.min(canvas.width, canvas.height) * 0.1;
           const patternSize = (logo.patternSize || 100) / 100 * baseSize;
+          const spacingX = (logo.patternSpacingX || 0) / 100 * baseSize;
+          const spacingY = (logo.patternSpacingY || 0) / 100 * baseSize;
           
           const patternCanvas = document.createElement('canvas');
           const patternCtx = patternCanvas.getContext('2d')!;
           
-          patternCanvas.width = patternSize;
-          patternCanvas.height = patternSize * (logoImg.height / logoImg.width);
+          const logoTileWidth = patternSize;
+          const logoTileHeight = patternSize * (logoImg.height / logoImg.width);
           
-          patternCtx.drawImage(logoImg, 0, 0, patternCanvas.width, patternCanvas.height);
+          // Tile size includes spacing to create gaps between repeated logos
+          patternCanvas.width = Math.max(1, logoTileWidth + spacingX);
+          patternCanvas.height = Math.max(1, logoTileHeight + spacingY);
+          
+          // Draw logo centered within the tile to keep spacing around all sides
+          const drawX = spacingX / 2;
+          const drawY = spacingY / 2;
+          patternCtx.clearRect(0, 0, patternCanvas.width, patternCanvas.height);
+          patternCtx.drawImage(logoImg, drawX, drawY, logoTileWidth, logoTileHeight);
           
           const pattern = ctx.createPattern(patternCanvas, 'repeat')!;
           
