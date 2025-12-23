@@ -1,6 +1,6 @@
 <div align="center">
 
-# Batch Image Watermarking App
+# Batch Imags Watermarking App
 
 Lightweight, fast, and polished desktop app for adding watermarks to images in batch. Built with React + Tauri for native performance.
 
