@@ -47,13 +47,22 @@ function App() {
       shootConfetti({ duration: 1800, particles: 120 });
     } catch {}
     
-    processedFiles.forEach((file) => {
+    // Download files with a small delay between each to avoid browser blocking
+    for (let i = 0; i < processedFiles.length; i++) {
+      const file = processedFiles[i];
       const link = document.createElement('a');
       link.href = URL.createObjectURL(file);
       link.download = file.name;
       link.click();
-      URL.revokeObjectURL(link.href);
-    });
+      
+      // Add a small delay between downloads to prevent browser blocking
+      if (i < processedFiles.length - 1) {
+        await new Promise(resolve => setTimeout(resolve, 100));
+      }
+      
+      // Clean up the URL after a short delay
+      setTimeout(() => URL.revokeObjectURL(link.href), 100);
+    }
   };
 
   const handleDownloadCurrent = async () => {

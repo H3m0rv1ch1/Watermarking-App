@@ -48,8 +48,6 @@ export const useImageStore = create<ImageStore>((set, get) => ({
     set({ isLoading: true, loadingMessage: `Loading ${totalFiles} image(s)...` });
 
     try {
-      let processedCount = 0;
-      
       // Process files in parallel and add them as they complete
       const processFile = async (file: File, index: number) => {
         try {
@@ -63,7 +61,6 @@ export const useImageStore = create<ImageStore>((set, get) => ({
           
           // Add image immediately as it's ready
           set((state) => ({ images: [...state.images, newImage] }));
-          processedCount++;
           
           return { success: true, file };
         } catch (error) {
@@ -72,7 +69,7 @@ export const useImageStore = create<ImageStore>((set, get) => ({
         }
       };
 
-      // Process all files in parallel
+      // Process ALL files in parallel for maximum speed (including HEIC)
       const results = await Promise.all(
         fileArray.map((file, index) => processFile(file, index))
       );

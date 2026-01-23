@@ -28,29 +28,48 @@ export function isHeicFile(file: File): boolean {
   return hasHeicExtension || hasHeicMimeType;
 }
 
+// Cache for converted HEIC files to avoid re-converting
+const heicConversionCache = new Map<string, Promise<File>>();
+
 /**
- * Converts HEIC/HEIF image to JPEG with optimized settings for speed
+ * Converts HEIC/HEIF image to JPEG with high quality and optimized for speed
  */
 export async function convertHeicToJpeg(file: File): Promise<File> {
-  try {
-    const convertedBlob = await heic2any({
-      blob: file,
-      toType: 'image/jpeg',
-      quality: 0.6,  // Lower quality = much faster conversion
-      multiple: false  // Ensure single output
-    });
-
-    // heic2any can return Blob or Blob[], handle both cases
-    const blob = Array.isArray(convertedBlob) ? convertedBlob[0] : convertedBlob;
-    
-    // Create a new file with .jpg extension
-    const newFileName = file.name.replace(/\.(heic|heif)$/i, '.jpg');
-    return new File([blob], newFileName, { type: 'image/jpeg' });
-  } catch (error) {
-    console.error('HEIC conversion failed for', file.name, ':', error);
-    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-    throw new Error(`Failed to convert HEIC image "${file.name}": ${errorMessage}. HEIC format may not be supported in your browser/environment. Please convert to JPG/PNG first.`);
+  // Create a unique cache key based on file properties
+  const cacheKey = `${file.name}-${file.size}-${file.lastModified}`;
+  
+  // Return cached conversion if available
+  if (heicConversionCache.has(cacheKey)) {
+    return heicConversionCache.get(cacheKey)!;
   }
+  
+  // Start conversion and cache the promise
+  const conversionPromise = (async () => {
+    try {
+      const convertedBlob = await heic2any({
+        blob: file,
+        toType: 'image/jpeg',
+        quality: 0.9,  // High quality maintained
+        multiple: false  // Ensure single output
+      });
+
+      // heic2any can return Blob or Blob[], handle both cases
+      const blob = Array.isArray(convertedBlob) ? convertedBlob[0] : convertedBlob;
+      
+      // Create a new file with .jpg extension
+      const newFileName = file.name.replace(/\.(heic|heif)$/i, '.jpg');
+      return new File([blob], newFileName, { type: 'image/jpeg' });
+    } catch (error) {
+      // Remove from cache on error
+      heicConversionCache.delete(cacheKey);
+      console.error('HEIC conversion failed for', file.name, ':', error);
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      throw new Error(`Failed to convert HEIC image "${file.name}": ${errorMessage}. HEIC format may not be supported in your browser/environment. Please convert to JPG/PNG first.`);
+    }
+  })();
+  
+  heicConversionCache.set(cacheKey, conversionPromise);
+  return conversionPromise;
 }
 
 /**
