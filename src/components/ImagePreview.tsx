@@ -4,13 +4,24 @@ import { loadImage } from '../lib/utils';
 import { ChevronLeft, ChevronRight, X, ZoomIn, ZoomOut, Maximize2 } from 'lucide-react';
 import { useLanguageStore } from '../store';
 
-export function ImagePreview() {
+interface ImagePreviewProps {
+  onPreviewIndexChange?: (index: number) => void;
+}
+
+export function ImagePreview({ onPreviewIndexChange }: ImagePreviewProps) {
   const { images, logos, patternMode } = useImageStore();
   const { t } = useLanguageStore();
   const canvasRef = React.useRef<HTMLCanvasElement>(null);
   const fullscreenCanvasRef = React.useRef<HTMLCanvasElement>(null);
   const [previewIndex, setPreviewIndex] = React.useState(0);
   const [isFullscreen, setIsFullscreen] = React.useState(false);
+
+  // Notify parent when preview index changes
+  React.useEffect(() => {
+    if (onPreviewIndexChange) {
+      onPreviewIndexChange(previewIndex);
+    }
+  }, [previewIndex, onPreviewIndexChange]);
   const [zoom, setZoom] = React.useState(1);
   const [position, setPosition] = React.useState({ x: 0, y: 0 });
   const [isDragging, setIsDragging] = React.useState(false);

@@ -19,6 +19,7 @@ import { shootConfetti } from './lib/confetti';
 function App() {
   const [showWelcome, setShowWelcome] = useState(true);
   const [isLangDropdownOpen, setIsLangDropdownOpen] = useState(false);
+  const [currentPreviewIndex, setCurrentPreviewIndex] = useState(0);
   
   const {
     images,
@@ -31,6 +32,7 @@ function App() {
     removeImage,
     setPatternMode,
     processImages,
+    processSingleImage,
   } = useImageStore();
 
   const { toggle: toggleTheme } = useTheme();
@@ -50,6 +52,22 @@ function App() {
       link.click();
       URL.revokeObjectURL(link.href);
     });
+  };
+
+  const handleDownloadCurrent = async () => {
+    const processedFile = await processSingleImage(currentPreviewIndex);
+    if (processedFile) {
+      // Celebrate successful download with a confetti burst
+      try {
+        shootConfetti({ duration: 1200, particles: 80 });
+      } catch {}
+      
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(processedFile);
+      link.download = processedFile.name;
+      link.click();
+      URL.revokeObjectURL(link.href);
+    }
   };
 
   // Show welcome page first
@@ -306,16 +324,25 @@ function App() {
               {t('preview')}
             </h2>
             
-            <ImagePreview />
+            <ImagePreview onPreviewIndexChange={setCurrentPreviewIndex} />
 
             {images.length > 0 && logos.length > 0 && (
-              <button
-                onClick={handleExport}
-                className="mt-4 sm:mt-6 w-full flex items-center justify-center gap-2 px-4 py-2.5 sm:py-3 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors text-sm sm:text-base font-medium shadow-lg shadow-blue-500/20"
-              >
-                <Download className="w-5 h-5" />
-                {t('exportImages')}
-              </button>
+              <div className="mt-4 sm:mt-6 flex flex-col sm:flex-row gap-3">
+                <button
+                  onClick={handleDownloadCurrent}
+                  className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 sm:py-3 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 text-gray-900 dark:text-white border-2 border-gray-300 dark:border-gray-600 rounded-lg transition-colors text-sm sm:text-base font-medium shadow-md"
+                >
+                  <Download className="w-5 h-5" />
+                  {t('downloadCurrent')}
+                </button>
+                <button
+                  onClick={handleExport}
+                  className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 sm:py-3 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors text-sm sm:text-base font-medium shadow-lg shadow-blue-500/20"
+                >
+                  <Download className="w-5 h-5" />
+                  {t('downloadAll')}
+                </button>
+              </div>
             )}
           </section>
         </div>

@@ -29,6 +29,7 @@ interface ImageStore {
   removeImage: (id: string) => void;
   setPatternMode: (enabled: boolean) => void;
   processImages: () => Promise<File[]>;
+  processSingleImage: (imageIndex: number) => Promise<File | null>;
 }
 
 export const useImageStore = create<ImageStore>((set, get) => ({
@@ -167,5 +168,86 @@ export const useImageStore = create<ImageStore>((set, get) => ({
     }
 
     return processedFiles;
+  },
+
+  processSingleImage: async (imageIndex: number) => {
+    const { images, logos, patternMode } = get();
+    
+    if (imageIndex < 0 || imageIndex >= images.length) {
+      return null;
+    }
+
+    const image = images[imageIndex];
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d')!;
+
+    const img = await loadImage(image.dataUrl);
+    canvas.width = img.width;
+    canvas.height = img.height;
+    ctx.drawImage(img, 0, 0);
+
+    for (const logo of logos) {
+      const logoImg = await loadImage(logo.dataUrl);
+      
+      if (patternMode) {
+        ctx.save();
+        ctx.globalAlpha = logo.opacity;
+        
+        const baseSize = Math.min(canvas.width, canvas.height) * 0.1;
+        const patternSize = (logo.patternSize || 100) / 100 * baseSize;
+        const spacingX = (logo.patternSpacingX || 0) / 100 * baseSize;
+        const spacingY = (logo.patternSpacingY || 0) / 100 * baseSize;
+        
+        const patternCanvas = document.createElement('canvas');
+        const patternCtx = patternCanvas.getContext('2d')!;
+        
+        const logoTileWidth = patternSize;
+        const logoTileHeight = patternSize * (logoImg.height / logoImg.width);
+        
+        patternCanvas.width = Math.max(1, logoTileWidth + spacingX);
+        patternCanvas.height = Math.max(1, logoTileHeight + spacingY);
+        
+        const drawX = spacingX / 2;
+        const drawY = spacingY / 2;
+        patternCtx.clearRect(0, 0, patternCanvas.width, patternCanvas.height);
+        patternCtx.drawImage(logoImg, drawX, drawY, logoTileWidth, logoTileHeight);
+        
+        const pattern = ctx.createPattern(patternCanvas, 'repeat')!;
+        
+        const matrix = new DOMMatrix();
+        matrix.translateSelf(
+          (logo.patternOffsetX || 0) + canvas.width / 2,
+          (logo.patternOffsetY || 0) + canvas.height / 2
+        );
+        matrix.rotateSelf((logo.patternRotation || 0));
+        matrix.translateSelf(-canvas.width / 2, -canvas.height / 2);
+        
+        pattern.setTransform(matrix);
+        
+        ctx.fillStyle = pattern;
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        
+        ctx.restore();
+      } else {
+        const logoWidth = (img.width * logo.size) / 100;
+        const logoHeight = (logoWidth / logoImg.width) * logoImg.height;
+        
+        ctx.globalAlpha = logo.opacity;
+        const x = logo.x * img.width - logoWidth / 2;
+        const y = logo.y * img.height - logoHeight / 2;
+        ctx.drawImage(logoImg, x, y, logoWidth, logoHeight);
+      }
+    }
+
+    const blob = await new Promise<Blob | null>((resolve) => {
+      canvas.toBlob((b) => resolve(b), image.file.type);
+    });
+
+    if (blob) {
+      const fileName = `watermarked_${image.file.name}`;
+      return new File([blob], fileName, { type: image.file.type });
+    }
+
+    return null;
   },
 }));
