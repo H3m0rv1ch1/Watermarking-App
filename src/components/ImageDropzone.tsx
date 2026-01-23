@@ -13,7 +13,7 @@ interface ImageDropzoneProps {
 export function ImageDropzone({
   onDrop,
   className,
-  accept = "image/*",
+  accept = "image/*,.heic,.heif",
   multiple = true,
 }: ImageDropzoneProps) {
   const [isDragging, setIsDragging] = React.useState(false);
@@ -59,7 +59,7 @@ export function ImageDropzone({
           <span className="font-semibold">{t('clickToUpload')}</span> {t('dragAndDrop')}
         </p>
         <p className="text-xs text-gray-500 dark:text-gray-400">
-          {multiple ? t('images') : t('image')} (PNG, JPG, WEBP)
+          {multiple ? t('images') : t('image')} (PNG, JPG, WEBP, HEIC)
         </p>
       </div>
       <input

@@ -5,6 +5,7 @@
 
 import { type ClassValue, clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
+import heic2any from 'heic2any';
 
 /**
  * Merges Tailwind CSS classes with clsx
@@ -14,14 +15,58 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 /**
- * Reads a file and converts it to a Data URL
+ * Checks if a file is HEIC/HEIF format
  */
-export function readFileAsDataURL(file: File): Promise<string> {
+export function isHeicFile(file: File): boolean {
+  const heicExtensions = ['.heic', '.heif'];
+  const heicMimeTypes = ['image/heic', 'image/heif', 'image/heic-sequence', 'image/heif-sequence'];
+  
+  const fileName = file.name.toLowerCase();
+  const hasHeicExtension = heicExtensions.some(ext => fileName.endsWith(ext));
+  const hasHeicMimeType = heicMimeTypes.includes(file.type.toLowerCase());
+  
+  return hasHeicExtension || hasHeicMimeType;
+}
+
+/**
+ * Converts HEIC/HEIF image to JPEG
+ */
+export async function convertHeicToJpeg(file: File): Promise<File> {
+  try {
+    const convertedBlob = await heic2any({
+      blob: file,
+      toType: 'image/jpeg',
+      quality: 0.9
+    });
+
+    // heic2any can return Blob or Blob[], handle both cases
+    const blob = Array.isArray(convertedBlob) ? convertedBlob[0] : convertedBlob;
+    
+    // Create a new file with .jpg extension
+    const newFileName = file.name.replace(/\.(heic|heif)$/i, '.jpg');
+    return new File([blob], newFileName, { type: 'image/jpeg' });
+  } catch (error) {
+    console.error('HEIC conversion failed:', error);
+    throw new Error('Failed to convert HEIC image. Please try a different image format.');
+  }
+}
+
+/**
+ * Reads a file and converts it to a Data URL
+ * Automatically converts HEIC/HEIF files to JPEG
+ */
+export async function readFileAsDataURL(file: File): Promise<string> {
+  // Convert HEIC to JPEG if needed
+  let processedFile = file;
+  if (isHeicFile(file)) {
+    processedFile = await convertHeicToJpeg(file);
+  }
+
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
     reader.onload = () => resolve(reader.result as string);
     reader.onerror = reject;
-    reader.readAsDataURL(file);
+    reader.readAsDataURL(processedFile);
   });
 }
 
