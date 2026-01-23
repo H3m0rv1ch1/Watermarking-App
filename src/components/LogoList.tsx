@@ -66,6 +66,9 @@ function LogoItem({ logo, patternMode, onUpdate, onRemove }: LogoItemProps) {
     try {
       const dataUrl = await readFileAsDataURL(file);
       onUpdate({ dataUrl, file });
+    } catch (error) {
+      console.error('Failed to change logo image:', error);
+      alert(`Failed to load image: ${file.name}. HEIC files may not be supported in this environment.`);
     } finally {
       setIsChangingImage(false);
     }

@@ -25,6 +25,8 @@ function App() {
     images,
     logos,
     patternMode,
+    isLoading,
+    loadingMessage,
     addImages,
     addLogo,
     updateLogo,
@@ -77,6 +79,28 @@ function App() {
 
   return (
     <div className="min-h-screen transition-colors overflow-x-hidden" dir={language === 'ar' ? 'rtl' : 'ltr'}>
+      {/* Loading Overlay */}
+      {isLoading && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[9999] flex items-center justify-center">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-2xl max-w-md mx-4">
+            <div className="flex flex-col items-center gap-4">
+              <div className="relative w-16 h-16">
+                <div className="absolute inset-0 border-4 border-blue-200 dark:border-blue-900 rounded-full"></div>
+                <div className="absolute inset-0 border-4 border-blue-500 rounded-full border-t-transparent animate-spin"></div>
+              </div>
+              <div className="text-center">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+                  Processing...
+                </h3>
+                <p className="text-sm text-gray-600 dark:text-gray-400">
+                  {loadingMessage}
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className="max-w-[1400px] mx-auto px-3 sm:px-6">
         <header className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 transition-colors sticky top-2 sm:top-6 z-50 rounded-2xl sm:rounded-3xl shadow-lg backdrop-blur-sm bg-opacity-95 dark:bg-opacity-95 my-2 sm:my-6">
           <div className="px-3 sm:px-6 py-3 sm:py-4">

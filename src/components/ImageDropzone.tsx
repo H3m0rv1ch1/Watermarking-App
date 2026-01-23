@@ -4,7 +4,7 @@ import { cn } from '../lib/utils';
 import { useLanguageStore } from '../store';
 
 interface ImageDropzoneProps {
-  onDrop: (files: FileList) => void;
+  onDrop: (files: FileList) => Promise<void> | void;
   className?: string;
   accept?: string;
   multiple?: boolean;
@@ -28,11 +28,15 @@ export function ImageDropzone({
     setIsDragging(false);
   };
 
-  const handleDrop = (e: React.DragEvent) => {
+  const handleDrop = async (e: React.DragEvent) => {
     e.preventDefault();
     setIsDragging(false);
     if (e.dataTransfer.files) {
-      onDrop(e.dataTransfer.files);
+      try {
+        await onDrop(e.dataTransfer.files);
+      } catch (error) {
+        console.error('Error handling dropped files:', error);
+      }
     }
   };
 
@@ -67,7 +71,15 @@ export function ImageDropzone({
         className="hidden"
         accept={accept}
         multiple={multiple}
-        onChange={(e) => e.target.files && onDrop(e.target.files)}
+        onChange={async (e) => {
+          if (e.target.files) {
+            try {
+              await onDrop(e.target.files);
+            } catch (error) {
+              console.error('Error handling selected files:', error);
+            }
+          }
+        }}
       />
     </label>
   );

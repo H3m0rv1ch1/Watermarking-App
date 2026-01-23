@@ -22,6 +22,8 @@ interface ImageStore {
   images: { file: File; dataUrl: string; id: string }[];
   logos: Logo[];
   patternMode: boolean;
+  isLoading: boolean;
+  loadingMessage: string;
   addImages: (files: FileList) => Promise<void>;
   addLogo: (file: File) => Promise<void>;
   updateLogo: (id: string, updates: Partial<Logo>) => void;
@@ -36,33 +38,81 @@ export const useImageStore = create<ImageStore>((set, get) => ({
   images: [],
   logos: [],
   patternMode: false,
+  isLoading: false,
+  loadingMessage: '',
 
   addImages: async (files) => {
-    const newImages = await Promise.all(
-      Array.from(files).map(async (file) => ({
-        id: Math.random().toString(36).slice(2),
-        file,
-        dataUrl: await readFileAsDataURL(file),
-      }))
-    );
-    set((state) => ({ images: [...state.images, ...newImages] }));
+    const fileArray = Array.from(files);
+    const totalFiles = fileArray.length;
+    
+    set({ isLoading: true, loadingMessage: `Loading ${totalFiles} image(s)...` });
+
+    try {
+      let processedCount = 0;
+      
+      // Process files in parallel and add them as they complete
+      const processFile = async (file: File, index: number) => {
+        try {
+          set({ loadingMessage: `Processing ${index + 1}/${totalFiles}: ${file.name}` });
+          const dataUrl = await readFileAsDataURL(file);
+          const newImage = {
+            id: Math.random().toString(36).slice(2),
+            file,
+            dataUrl,
+          };
+          
+          // Add image immediately as it's ready
+          set((state) => ({ images: [...state.images, newImage] }));
+          processedCount++;
+          
+          return { success: true, file };
+        } catch (error) {
+          console.error(`Failed to process ${file.name}:`, error);
+          return { success: false, file, error };
+        }
+      };
+
+      // Process all files in parallel
+      const results = await Promise.all(
+        fileArray.map((file, index) => processFile(file, index))
+      );
+
+      const failedFiles = results.filter(r => !r.success);
+
+      if (failedFiles.length > 0) {
+        const failedNames = failedFiles.map(r => r.file.name).join(', ');
+        const errorMsg = `Failed to load ${failedFiles.length} image(s): ${failedNames}. HEIC files may not be supported in this environment.`;
+        alert(errorMsg);
+      }
+    } finally {
+      set({ isLoading: false, loadingMessage: '' });
+    }
   },
 
   addLogo: async (file) => {
-    const dataUrl = await readFileAsDataURL(file);
-    const logo: Logo = {
-      id: Math.random().toString(36).slice(2),
-      file,
-      dataUrl,
-      position: 'bottom-right',
-      size: 10,
-      opacity: 0.8,
-      x: positions['bottom-right'].x,
-      y: positions['bottom-right'].y,
-      patternSpacingX: 0,
-      patternSpacingY: 0,
-    };
-    set((state) => ({ logos: [...state.logos, logo] }));
+    set({ isLoading: true, loadingMessage: `Loading logo: ${file.name}` });
+    try {
+      const dataUrl = await readFileAsDataURL(file);
+      const logo: Logo = {
+        id: Math.random().toString(36).slice(2),
+        file,
+        dataUrl,
+        position: 'bottom-right',
+        size: 10,
+        opacity: 0.8,
+        x: positions['bottom-right'].x,
+        y: positions['bottom-right'].y,
+        patternSpacingX: 0,
+        patternSpacingY: 0,
+      };
+      set((state) => ({ logos: [...state.logos, logo] }));
+    } catch (error) {
+      console.error('Failed to add logo:', error);
+      alert(`Failed to load logo: ${file.name}. HEIC files may not be supported in this environment.`);
+      throw error;
+    } finally {
+      set({ isLoading: false, loadingMessage: '' });
+    }
   },
 
   updateLogo: (id, updates) => {

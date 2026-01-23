@@ -29,14 +29,15 @@ export function isHeicFile(file: File): boolean {
 }
 
 /**
- * Converts HEIC/HEIF image to JPEG
+ * Converts HEIC/HEIF image to JPEG with optimized settings for speed
  */
 export async function convertHeicToJpeg(file: File): Promise<File> {
   try {
     const convertedBlob = await heic2any({
       blob: file,
       toType: 'image/jpeg',
-      quality: 0.9
+      quality: 0.6,  // Lower quality = much faster conversion
+      multiple: false  // Ensure single output
     });
 
     // heic2any can return Blob or Blob[], handle both cases
@@ -46,20 +47,35 @@ export async function convertHeicToJpeg(file: File): Promise<File> {
     const newFileName = file.name.replace(/\.(heic|heif)$/i, '.jpg');
     return new File([blob], newFileName, { type: 'image/jpeg' });
   } catch (error) {
-    console.error('HEIC conversion failed:', error);
-    throw new Error('Failed to convert HEIC image. Please try a different image format.');
+    console.error('HEIC conversion failed for', file.name, ':', error);
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    throw new Error(`Failed to convert HEIC image "${file.name}": ${errorMessage}. HEIC format may not be supported in your browser/environment. Please convert to JPG/PNG first.`);
   }
 }
 
 /**
  * Reads a file and converts it to a Data URL
  * Automatically converts HEIC/HEIF files to JPEG
+ * Optimized for speed with immediate feedback
  */
 export async function readFileAsDataURL(file: File): Promise<string> {
   // Convert HEIC to JPEG if needed
   let processedFile = file;
   if (isHeicFile(file)) {
-    processedFile = await convertHeicToJpeg(file);
+    try {
+      // Show immediate feedback by starting conversion
+      console.log(`Converting HEIC: ${file.name}`);
+      const startTime = performance.now();
+      
+      processedFile = await convertHeicToJpeg(file);
+      
+      const endTime = performance.now();
+      console.log(`HEIC conversion completed in ${(endTime - startTime).toFixed(0)}ms`);
+    } catch (error) {
+      // If conversion fails, try to read the original file anyway
+      // Some browsers might support HEIC natively
+      console.warn('HEIC conversion failed, attempting to read original file:', error);
+    }
   }
 
   return new Promise((resolve, reject) => {
